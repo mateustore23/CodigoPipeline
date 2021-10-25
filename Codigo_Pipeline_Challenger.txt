@@ -1,0 +1,30 @@
+node {
+
+stage('Extrair Codigo Fonte') {
+echo 'Extraindo codigo fonte...'
+checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/profjoaomenk/rock-paper-scissors']]])
+}
+
+
+
+stage('Build') {
+    sh 'pwd'
+    echo 'Versão'
+    sh 'cat /etc/issue.net'
+    echo 'Java'
+    sh 'java -version'
+    echo 'Maven'
+    sh '/opt/maven/bin/mvn clean install'
+}
+
+
+stage('Teste Iniciais'){
+    echo 'Testes Unitarios da Aplicação'
+}
+
+
+stage('Deploy') {
+    echo 'Realizando o Deploy em Desenvolvimento...'
+    deploy adapters: [tomcat9(credentialsId: 'devops', path: '', url: 'http://localhost:8080')], contextPath: 'roshambo', onFailure: false, war: '**/*.war'
+} 
+}
